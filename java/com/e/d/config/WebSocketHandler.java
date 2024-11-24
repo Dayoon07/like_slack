@@ -1,5 +1,6 @@
 package com.e.d.config;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,16 +47,20 @@ public class WebSocketHandler extends TextWebSocketHandler {
         ChatMessageEntity msg = mapper.readValue(message.getPayload(), ChatMessageEntity.class);
 
         switch (msg.getType()) {
-            case "enter":
-                addClientToRoom(session, msg);  // 클라이언트 입장 처리
-                break;
-            case "chat":
-                saveMessageAndBroadcast(msg);  // 채팅 메시지 전송 및 DB 저장
-                break;
-            case "exit":
-                removeClientFromRoom(session, msg);  // 클라이언트 나가기 처리
-                break;
-        }
+	        case "enter":
+	            addClientToRoom(session, msg);  // 클라이언트 입장 처리
+	            break;
+	        case "chat":
+	            if (msg.getReceiver() != null && !msg.getReceiver().trim().isEmpty()) {
+	                sendPrivateMessage(msg);  // 1:1 메시지 처리
+	            } else {
+	                saveMessageAndBroadcast(msg);  // 전체 메시지 처리
+	            }
+	            break;
+	        case "exit":
+	            removeClientFromRoom(session, msg);  // 클라이언트 나가기 처리
+	            break;
+	    }
     }
 
     // 클라이언트 입장 처리
@@ -75,23 +80,26 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     // 채팅 메시지 저장 및 브로드캐스트
     private void saveMessageAndBroadcast(ChatMessageEntity msg) {
-        // 채팅 내용이 msg.getData()에 들어 있는지 확인하고 사용
+        // 채팅 내용이 비어 있는지 확인
         if (msg.getData() == null || msg.getData().trim().isEmpty()) {
             log.error("메시지 내용이 비어 있습니다.");
             return; // 비어있는 메시지는 저장하지 않음
         }
 
+        // 메시지에 현재 시간을 설정
         msg.setDateTime(LocalDateTime.now());
         log.info("저장할 메시지: " + msg);
 
+        // DB에 메시지 저장
         try {
-            chatMessageRepository.save(msg); // DB에 메시지 저장
+            chatMessageRepository.save(msg);
             log.info("메시지가 DB에 저장되었습니다.");
         } catch (Exception e) {
             log.error("DB에 메시지 저장 중 오류 발생: " + e.getMessage());
         }
 
-        broadcastSend(msg.getRoomid(), msg);
+        // 방에 있는 클라이언트들에게 메시지를 브로드캐스트
+        sendMessageToRoom(msg);  // 메시지 전송 방식 개선
     }
 
     // 클라이언트 퇴장 처리
@@ -158,4 +166,55 @@ public class WebSocketHandler extends TextWebSocketHandler {
         roomClients.values().forEach(clientsInRoom -> clientsInRoom.values().remove(session));
         super.afterConnectionClosed(session, status);
     }
+    
+    // 1:1 메시지 처리
+    private void sendPrivateMessage(ChatMessageEntity msg) {
+        String receiver = msg.getReceiver();
+        int roomId = msg.getRoomid();
+
+        // 해당 방에서 수신자가 존재하는지 확인
+        Map<String, WebSocketSession> clientsInRoom = roomClients.get(roomId);
+        if (clientsInRoom != null && clientsInRoom.containsKey(receiver)) {
+            WebSocketSession receiverSession = clientsInRoom.get(receiver);
+            try {
+                TextMessage sendMsg = new TextMessage(mapper.writeValueAsString(msg));
+                receiverSession.sendMessage(sendMsg);  // 수신자에게 메시지 전송
+            } catch (Exception e) {
+                log.error("1:1 메시지 전송 중 오류 발생: " + e.getMessage());
+            }
+        } else {
+            log.error("해당 수신자가 존재하지 않음: " + receiver);
+        }
+    }
+    
+    private void sendMessageToRoom(ChatMessageEntity msg) {
+        // 채팅방에 속한 모든 클라이언트에게 메시지 전송
+        Map<String, WebSocketSession> clientsInRoom = roomClients.get(msg.getRoomid());
+
+        if (clientsInRoom != null) {
+            // 방에 있는 클라이언트들만 필터링하여 메시지 전송
+            for (WebSocketSession session : clientsInRoom.values()) {
+                try {
+                    // 메시지 직렬화 후 전송
+                    TextMessage sendMsg = new TextMessage(mapper.writeValueAsString(msg));
+                    session.sendMessage(sendMsg);
+                } catch (IOException e) {
+                    log.error("메시지 전송 중 오류 발생: " + e.getMessage());
+                }
+            }
+        } else {
+            log.warn("해당 방에 클라이언트가 없습니다. 메시지를 전송할 수 없습니다.");
+        }
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

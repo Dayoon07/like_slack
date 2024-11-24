@@ -75,18 +75,18 @@
 				    <div id="myModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
 				        <div class="bg-white rounded-lg shadow-lg w-96 mx-auto p-6">
 				            <h2 class="text-xl font-bold mb-4">${ userProfile.username }님</h2>
-				            <form action="${ cl }/userDelete/${ userProfile.userid }" method="post" autocomplete="off">
-					            <p class="mb-4"><input type="hidden" id="userid" name="userid" value="${ userProfile.userid }" readonly required></p>
-					            <p class="mb-4">계정을 삭제하시겠습니까?</p>
-					            <div class="flex">
-					            	<button type="button" id="closeModal" class="bg-blue-500 text-white p-2 px-4 rounded outline hover:outline-offset-2 transition duration-200 mr-5">
-						                취소하기
-						            </button>
+							<p class="mb-4">계정을 삭제하시겠습니까?</p>
+					        <div class="flex">
+					        	<button type="button" id="closeModal" class="bg-blue-500 text-white p-2 px-4 rounded outline hover:outline-offset-2 transition duration-200 mr-5">
+						        	취소하기
+								</button>
+								<form action="${ cl }/userDelete?userid=${ userProfile.userid }" method="post" autocomplete="off">
+									<input type="hidden" id="userid" name="userid" value="${ userProfile.userid }" readonly required>
 					            	<button type="submit" class="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition duration-200">
 						                계정 삭제하기
 						            </button>
-				            	</div>
-				            </form>
+					            </form>
+				            </div>
 				        </div>
 				    </div>
 		        </div>

@@ -12,9 +12,9 @@
 <body>
     <jsp:include page="/WEB-INF/common/header.jsp" />
 
-	<div class="p-5 max-w-screen-xl min-w-80 mx-auto flex p-4"> <!-- max-width: 1024px; min-width: 320px; -->
+	<div class="p-5 max-w-5xl mx-auto flex p-4"> <!-- max-width: 1024px; min-width: 320px; -->
 		<c:if test="${ not empty AllChatRoom }">
-			<ul role="list" class="px-5 w-3/5 block"> <!-- width: 384px; -->
+			<ul role="list" class="px-5 w-full block"> <!-- width: 384px; -->
 	            <c:forEach var="room" items="${ AllChatRoom }">
 	                <a href="${ cl }/chatroom?roomname=${ room.roomname }&ownername=${ room.ownername }&roomid=${ room.roomid }" class="flex justify-between gap-x-6 py-5 px-8 border-b-1 border-gray-300 hover:bg-gray-100">
 	                    <div class="flex min-w-0 gap-x-4 py-2">
@@ -31,19 +31,6 @@
 			    </div>
 	        </ul>
 		</c:if>
-		<div class="w-2/5">
-			<ul role="list" class="px-5">
-				<a href="${ cl }/chatroom/dm/1" class="flex justify-between gap-x-6 py-5 px-8 border-b-1 border-gray-300 hover:bg-gray-100">
-					<div class="flex gap-x-4 py-2">
-	                	<div class="min-w-0 flex-auto">
-	                    	<p class="text-xl font-semibold leading-6 text-gray-900">친구 이름 - 현재 상태(online OR offline)</p>
-	                        <p class="mt-1 truncate text-xl leading-5 text-gray-500">친구 프로필 설명</p>
-	                        <p class="mt-5 truncate text-xl leading-5 text-gray-500">친구 이메일</p>
-						</div>
-					</div>
-				</a>
-			</ul>
-		</div>
 	</div>
     
     <c:if test="${ empty AllChatRoom }">

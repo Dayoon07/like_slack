@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.e.d.model.entity.ChatRoomEntity;
@@ -15,4 +16,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Intege
 	Page<ChatRoomEntity> findAll(Pageable pageable); 
 	List<ChatRoomEntity> findByOwnername(String ownername);  // 방 소유자명으로 방 조회
 	List<ChatRoomEntity> findByRoomnameAndOwnernameAndRoomid(String roomname, String ownername, String roomid);
+	
+    void deleteByOwnername(@Param("ownername") String ownername);
 }

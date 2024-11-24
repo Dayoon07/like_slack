@@ -12,7 +12,7 @@
 </head>
 <body>
     <div class="flex h-screen">
-        <div id="sidebar" class="w-64 bg-gray-900 text-white px-4 space-y-6 fixed h-full transform -translate-x-full">
+        <div id="sidebar" class="w-64 bg-gray-900 text-white px-4 scroll space-y-6 fixed h-full transform -translate-x-full">
 		    <a href="${ cl }/" class="text-2xl border-b border-gray-700 font-bold text-center mt-4 pb-4 block">이름추천</a>	
 		    <a href="${ cl }/profile/${ chat.ownername }" class="text-2xl font-bold text-left ml-2 block" target="_blank">${ chat.ownername } (관리자)</a>
 		    
@@ -43,7 +43,7 @@
 		                </ul>
 		            </details>
 		            <details>
-		                <summary class="py-2 px-4 text-gray-300 rounded hover:bg-gray-700 cursor-pointer">현재 접속중인 유저</summary>
+		                <summary class="py-2 px-4 text-gray-300 rounded hover:bg-gray-700 cursor-pointer">현재 접속 유저 : <span id="userCount"></span>명</summary>
 		                <div id="user-list-container"></div>
 		            </details>
 		        </c:if>
@@ -73,7 +73,7 @@
             </div>
         </div>
     </div>
-
+    
     <jsp:include page="/WEB-INF/common/footer.jsp" />
 </body>
 </html>

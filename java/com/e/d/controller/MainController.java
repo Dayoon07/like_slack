@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.e.d.config.WebSocketHandler;
 import com.e.d.model.entity.ChatMessageEntity;
 import com.e.d.model.entity.ChatRoomEntity;
 import com.e.d.model.entity.ChatUserEntity;
@@ -137,11 +135,11 @@ public class MainController {
 	        @RequestParam String userpassword,
 	        HttpSession session) {
 	    // 사용자 이름으로 조회
-	    List<ChatUserEntity> users = userRepository.findByUsername(username);
+	    Optional<ChatUserEntity> users = userRepository.findByUsernameAndUserpassword(username, userpassword);
 	    
 	    // 사용자가 존재하고 비밀번호가 일치하는지 확인
-	    if (!users.isEmpty() && users.get(0).getUserpassword().equals(userpassword)) {
-	        ChatUserEntity user = users.get(0); // 첫 번째 사용자 선택
+	    if (!users.isEmpty() && users.get().getUsername().equals(username) && users.get().getUserpassword().equals(userpassword)) {
+	        ChatUserEntity user = users.get();
 	        
 	        user.setStatus("online");
 	        userRepository.save(user);
@@ -154,10 +152,8 @@ public class MainController {
 	        return "redirect:/";
 	    } else {
 	    	log.info("뭔진 모르겠지만 로그인 실패");
+	    	return "redirect:/signin";
 	    }
-	    
-	    session.setAttribute("loginError", "Invalid username or password");
-	    return "redirect:/signin";
 	}
 	
 	@PostMapping("/logout")
@@ -177,10 +173,10 @@ public class MainController {
 	
 	@GetMapping("/profile/{username}")
 	public String getUserProfile(Model model, @PathVariable String username) {
-	    List<ChatUserEntity> users = userRepository.findByUsername(username);
+	    Optional<ChatUserEntity> users = userRepository.findByUsername(username);
 	    
 	    if (!users.isEmpty()) {
-	        ChatUserEntity userProfile = users.get(0);
+	        ChatUserEntity userProfile = users.get();
 	        model.addAttribute("userProfile", userProfile);
 	        return "user/profile"; // 사용자 프로필 JSP로 이동
 	    } else {
@@ -220,18 +216,19 @@ public class MainController {
 	    }
 	}
 	
-	@PostMapping("/userDelete/{userid}")
-    public String userDelete(@PathVariable int userid, RedirectAttributes redirectAttributes) {
-        try {
-            userRepository.deleteById(userid);
-            redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 삭제되었습니다.");
-            return "redirect:/"; // 삭제 후 메인 페이지로 리다이렉트
-        } catch (Exception e) {
-            log.error("계정 삭제 실패: userid={}, 오류={}", userid, e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "계정 삭제에 실패했습니다. 다시 시도해주세요.");
-            return "redirect:/user/profile"; // 오류 발생 시 프로필 페이지로 리다이렉트
-        }
-    }
+	@PostMapping("/userDelete")
+	public String userDelete(@RequestParam int userid, HttpSession session) {
+	    try {
+	    	session.invalidate();
+	    	log.info("연결 종료 : " + userid);
+	        userService.deleteUserAndRooms(userid);
+	        log.info("계정 삭제 완료: {}", userid);
+	        return "redirect:/";
+	    } catch (Exception e) {
+	        log.error("계정 삭제 실패: userid={}, 오류={}", userid, e.getMessage());
+	        return "redirect:/user/profile/" + userid;
+	    }
+	}
 	
 	@GetMapping("/create")
 	public String create() {

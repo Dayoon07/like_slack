@@ -1,6 +1,9 @@
 package com.e.d.model.entity;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatMessageEntity {
 	
 	@Id
@@ -44,5 +48,7 @@ public class ChatMessageEntity {
     
     @Column(name = "sender")
     private String sender;
+    
+    private String time;
 	
 }

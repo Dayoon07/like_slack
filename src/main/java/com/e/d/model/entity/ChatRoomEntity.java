@@ -29,6 +29,6 @@ public class ChatRoomEntity {
     @Column(name = "date_time", nullable = false, updatable = false)
     private LocalDateTime dateTime;
 
-    @Column(name = "ownername", nullable = false)
+    @Column
     private String ownername;
 }

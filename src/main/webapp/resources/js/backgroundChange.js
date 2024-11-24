@@ -6,13 +6,12 @@ function blackAndWhite() {
 	const sidebar = document.getElementById("sidebar");
 	
 	if (!chkbg.checked) {
-		bg.classList.add("bg-gray-100");
 		bg.classList.remove("bg-gray-900", "border-t", "border-b", "border-gray-700");
 		
 		chatHeader.classList.add("bg-blue-500");
 		chatHeader.classList.remove("bg-gray-900");
 		
-		mf.classList.add("border-gray-300", "bg-gray-100");
+		mf.classList.add("border-gray-300", "bg-gray-100", "border-t");
 		mf.classList.remove("bg-gray-900");
 		
 		sidebar.classList.remove("border-gray-700", "border-r");
