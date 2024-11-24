@@ -41,6 +41,7 @@
 | `sender`       | `VARCHAR2(255 CHAR)`      | 메시지의 발신자 이름                                               |
 | `receiver`     | `VARCHAR2(255 CHAR)`      | 메시지의 수신자 이름.                                               |
 | `data`         | `CLOB`                    | chattext랑 똑같음 chattext필드의 실질적인 값 (기본 생성자)          |
+| `time`         | `VARCHAR2(255 CHAR)`      | 사용자가 메시지를 보낸 시간          |
 
 ## 테이블 간 관계
 
