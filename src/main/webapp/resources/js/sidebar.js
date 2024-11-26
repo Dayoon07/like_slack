@@ -33,9 +33,7 @@ function mainSideClose() {
 }
 
 const roomnameFormat = () => {
-	const chatroomname = document.getElementById("chatroomname");
-	var ww = window.innerWidth;
-	if (ww < 500) {
-		chatroomname.innerHTML = "";
+	if (window.innerWidth < 500) {
+		document.getElementById("chatroomname").innerHTML = "";
 	}
 }
