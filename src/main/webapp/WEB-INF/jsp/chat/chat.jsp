@@ -53,7 +53,7 @@
 		</div>
 
         <div id="main-content" class="flex-1 flex flex-col bg-white ml-64">
-            <div class="py-4 pr-4 bg-blue-500 text-white flex items-center justify-between" id="chatHeader">
+            <div class="py-4 pr-4 bg-blue-900 text-white flex items-center justify-between" id="chatHeader">
             	<div class="flex items-center relative">
             		<button onclick="toggleSidebar()" class="bg-gray-900 text-white text-2xl absolute left-0" style="width: 60px; height: 60px;">☰</button>
                 	<h2 class="text-lg font-semibold ml-20" id="chatroomname">${ chat.roomname } 채팅방</h2>
